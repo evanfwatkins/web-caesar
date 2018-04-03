@@ -1,5 +1,7 @@
-from flask import Flask, request
+from flask import Flask, request, render_template 
 from caesar import rotate_string
+from caesar import alphabet_position
+
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -9,42 +11,40 @@ form = """
 <html>
     <head>
         <style>
-            form {
+            form {{
                 background-color: #eee;
                 padding: 20px;
                 margin: 0 auto;
                 width: 540px;
                 font: 16px sans-serif;
                 border-radius: 10px;
-            }
-            textarea {
+            }}
+            textarea {{
                 margin: 10px 0;
                 width: 540px;
                 height: 120px;
-            }
+            }}
         </style>
     </head>
     <body>
-        <form method="POST">
-            <label for="rot">Rot</label>
-            <input type="text" name="rot" value=0> 
-            <textarea name="text" rows="4" cols="50"> </textarea>
-            <input type="submit"> 
-        </form>
+        <form action= "/encrypt" method= "post">
+            <label for="rot">Rotate by:</label>
+            <input id="rot" type="text" name="rot" value=0 />
+            <textarea id="text" name="text">{0}</textarea>
+            <input type="submit"/>
     </body>
 </html>
 """
-@app.route("/" methods=['POST'])
-def encrypt():
-### 3/28/2018 Current Postition --store the values of
-#  these request parameters in local variables,
-#  converting data types as necessary. Then, encrypt 
-#  the value of the text parameter using rotate_string. 
-#  Return the encrypted string wrapped in <h1> tags, to 
-#  be rendered in the browser.
-
-@app.route("/")
+@app.route("/") 
 def index():
-    return form
+    return form.format("")
+
+@app.route ("/encrypt", methods=["POST"])
+def encrypt():
+    text = request.form["text"]
+    rot = request.form["rot"]
+    rot = int(rot)
+    new_encrypt = rotate_string(text, rot)
+    return form.format(new_encrypt)
 
 app.run()
